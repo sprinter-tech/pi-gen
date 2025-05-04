@@ -1,0 +1,3 @@
+#!/bin/bash -e
+install -m 644 files/30-publish.conf \
+        "${ROOTFS_DIR}/etc/avahi/avahi-daemon.conf.d/"
