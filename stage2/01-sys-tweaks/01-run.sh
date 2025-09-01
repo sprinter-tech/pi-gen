@@ -16,7 +16,7 @@ on_chroot << EOF
 if [ "${ENABLE_SSH}" == "1" ]; then
 	systemctl enable ssh
 	# Regenerate SSH host keys on first boot if they don't exist
-	systemctl enable ssh-keygen.service || true
+	systemctl enable regenerate_ssh_host_keys.service || true
 else
 	systemctl disable ssh
 fi
