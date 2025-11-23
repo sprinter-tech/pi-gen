@@ -7,3 +7,5 @@ SKIP
 SKIP_IMAGES
 .pc
 *-pc
+stage6/01-sdca/files/sdca*
+CLAUDE.md

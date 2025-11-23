@@ -42,7 +42,8 @@ fi
 
 # Get root device and partition info
 ROOT_PART_DEV=$(findmnt / -o source -n)
-ROOT_DEV_NAME=$(echo "${ROOT_PART_DEV}" | sed 's/p[0-9]*$//' | sed 's/[0-9]*$//')
+# Use lsblk to reliably get parent device (handles both mmcblk0p2 and sda2 formats)
+ROOT_DEV_NAME="/dev/$(lsblk -no pkname "${ROOT_PART_DEV}")"
 ROOT_PART_NUM=$(echo "${ROOT_PART_DEV}" | grep -o '[0-9]*$')
 
 # Verify this is an SD card or eMMC device
@@ -65,8 +66,8 @@ fi
 
 echo "Resizing partition ${ROOT_PART_NUM} on ${ROOT_DEV_NAME}..."
 
-# Resize partition
-parted "${ROOT_DEV_NAME}" --script resizepart "${ROOT_PART_NUM}" 100%
+# Resize partition (using pretend-input-tty to handle the "in use" warning)
+echo "Yes" | parted ---pretend-input-tty "${ROOT_DEV_NAME}" resizepart "${ROOT_PART_NUM}" 100%
 
 # Wait for partition table to be re-read
 partprobe "${ROOT_DEV_NAME}"
