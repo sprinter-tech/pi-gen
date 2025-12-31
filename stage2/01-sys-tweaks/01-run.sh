@@ -49,9 +49,25 @@ EOF
 
 rm -f "${ROOTFS_DIR}/etc/ssh/"ssh_host_*_key*
 
+# Write a complete /etc/default/keyboard file to ensure it's fully configured
+cat > "${ROOTFS_DIR}/etc/default/keyboard" << KBDEOF
+# KEYBOARD CONFIGURATION FILE
+# Consult the keyboard(5) manual page.
+XKBMODEL="pc105"
+XKBLAYOUT="${KEYBOARD_KEYMAP}"
+XKBVARIANT=""
+XKBOPTIONS=""
+BACKSPACE="guess"
+KBDEOF
+
 sed -i 's/^FONTFACE=.*/FONTFACE=""/;s/^FONTSIZE=.*/FONTSIZE=""/' "${ROOTFS_DIR}/etc/default/console-setup"
-sed -i "s/PLACEHOLDER//" "${ROOTFS_DIR}/etc/default/keyboard"
+
 on_chroot << EOF
+# Pre-seed debconf to prevent any prompts
+echo "keyboard-configuration keyboard-configuration/layoutcode string ${KEYBOARD_KEYMAP}" | debconf-set-selections
+echo "keyboard-configuration keyboard-configuration/model select Generic 105-key (Intl) PC" | debconf-set-selections
+echo "keyboard-configuration keyboard-configuration/variant select ${KEYBOARD_LAYOUT}" | debconf-set-selections
+echo "keyboard-configuration keyboard-configuration/xkb-keymap select ${KEYBOARD_KEYMAP}" | debconf-set-selections
 DEBIAN_FRONTEND=noninteractive dpkg-reconfigure keyboard-configuration console-setup
 EOF
 
