@@ -37,3 +37,4 @@ kms++-utils
 python3-venv
 bluez bluez-firmware
 sysstat
+cron

@@ -74,3 +74,8 @@ EOF
 if [ -e "${ROOTFS_DIR}/etc/avahi/avahi-daemon.conf" ]; then
   sed -i 's/^#\?publish-workstation=.*/publish-workstation=yes/' "${ROOTFS_DIR}/etc/avahi/avahi-daemon.conf"
 fi
+
+cat > "${ROOTFS_DIR}/etc/cron.d/throttle-watch" <<'EOF'
+*/5 * * * * root /usr/bin/vcgencmd get_throttled | logger -t throttle
+EOF
+chmod 0644 "${ROOTFS_DIR}/etc/cron.d/throttle-watch"
